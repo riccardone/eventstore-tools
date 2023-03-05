@@ -1,24 +1,24 @@
-﻿using System;
-using EventStore.ClientAPI;
+﻿namespace Linker;
 
-namespace Linker
+public class LinkerConnectionBuilder : ILinkerConnectionBuilder
 {
-    public class LinkerConnectionBuilder : ILinkerConnectionBuilder
+    public Uri ConnectionString { get; }
+    public string ConnectionName { get; }
+    public ILinkerConnection Build()
     {
-        public Uri ConnectionString { get; }
-        public ConnectionSettings ConnectionSettings { get; }
-        public string ConnectionName { get; }
-
-        public IEventStoreConnection Build()
-        {
-            return EventStoreConnection.Create(ConnectionSettings, ConnectionString, ConnectionName);
-        }
-
-        public LinkerConnectionBuilder(Uri connectionString, ConnectionSettings connectionSettings, string connectionName)
-        {
-            ConnectionString = connectionString;
-            ConnectionSettings = connectionSettings;
-            ConnectionName = connectionName;
-        }
+        return Build(ConnectionName);
+    }
+    public ILinkerConnection Build(string name)
+    {
+        if (ConnectionString.Scheme.Equals("tcp"))
+            return new LinkerConnectionTcp(ConnectionString.ToString(), name);
+        if (ConnectionString.Scheme.Equals("esdb"))
+            return new LinkerConnectionGrpc(ConnectionString.ToString(), name);
+        throw new Exception("Can't understand the connectionstring");
+    }
+    public LinkerConnectionBuilder(Uri connectionString, string connectionName)
+    {
+        ConnectionName = connectionName;
+        ConnectionString = connectionString;
     }
 }

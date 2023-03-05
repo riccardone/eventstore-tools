@@ -1,15 +1,8 @@
-﻿using System;
-using EventStore.ClientAPI;
+﻿namespace Linker;
 
-namespace Linker
+public interface ILinkerConnectionBuilder
 {
-    public interface ILinkerConnectionBuilder
-    {
-        [Obsolete]
-        Uri ConnectionString { get; }
-        [Obsolete]
-        ConnectionSettings ConnectionSettings { get; }
-        string ConnectionName { get; }
-        IEventStoreConnection Build();
-    }
+    string ConnectionName { get; }
+    ILinkerConnection Build();
+    ILinkerConnection Build(string name);
 }
